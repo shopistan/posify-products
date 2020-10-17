@@ -39,11 +39,20 @@ const removeProduct = async (event, context) => {
   let response = await ProductsController.remove({ id });
   return send(response);
 };
+
+const updateInventory = async (event, context) => {
+  let request = formatBody(event);
+  let body = JSON.parse(request.body.Sns.Message).body
+  let response = await ProductsController.updateInventory({ body });
+  return send(response);
+};
+
 module.exports = {
   count: countProducts,
   all: getAllProducts,
   single: getSingleProducts,
   create: createProduct,
   update: updateProduct,
-  remove: removeProduct
+  remove: removeProduct,
+  updateInventory: updateInventory
 };

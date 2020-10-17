@@ -10,8 +10,11 @@ module.exports = {
     offlineEndpoint: process.env.awsOfflineEndpoint || 'http://127.0.0.1:4002',
   },
   snsTopics: {
-    productCreated:
-      process.env.snsProductCreatedTopic ||
-      'arn:aws:sns:us-east-1:403302655770:productCreated',
+    orderCreated:
+      process.env.snsOrderCreatedTopic ||
+      'arn:aws:sns:us-east-1:403302655770:orderCreated',
+    purchaseCreated:
+      process.env.snsPurchaseCreatedTopic ||
+      'arn:aws:sns:us-east-1:403302655770:purchaseCreated',
   },
 };
