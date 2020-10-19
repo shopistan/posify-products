@@ -7,8 +7,6 @@ const all = async () => {
 
 const single = async ({ id }) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return { statusCode: 400, message: 'Invalid ObjectId' };
     const product = await Product.findOne({ _id: id });
     return product;
   }
@@ -40,8 +38,6 @@ const create = async ({ body }) => {
 
 const update = async ({ id, body }) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return { statusCode: 400, message: 'Invalid ObjectId' };
     let product = await Product.findOneAndUpdate({ _id: id }, body, {
       new: true
     });
@@ -75,8 +71,6 @@ const updateInventory = async ({ body }) => {
 
 const remove = async ({ id }) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return { statusCode: 400, message: 'Invalid ObjectId' };
     await Product.deleteOne({ _id: id });
     return true;
   }
