@@ -1,4 +1,4 @@
-service: posify
+service: products
 app: commercejs
 org: shopdevco
 
@@ -14,8 +14,8 @@ provider:
       Action:
         - 'sns:Publish'
       Resource:
-        - ${env:snsProductCreatedTopic}
-
+        - ${env:snsOrderCreatedTopic}
+        - ${env:snsPurchaseCreatedTopic}
 plugins:
   - serverless-webpack
   - serverless-dotenv-plugin
@@ -54,7 +54,8 @@ custom:
     awsAccessKeyId: ${env:awsAccessKeyId}
     awsSecretKey: ${env:awsSecretKey}
     awsAccountId: ${env:awsAccountId}
-    snsProductCreatedTopic: ${env:snsProductCreatedTopic}
+    snsOrderCreatedTopic: ${env:snsOrderCreatedTopic}
+    snsPurchaseCreatedTopic: ${env:snsPurchaseCreatedTopic}
 
 functions:
   count:
@@ -93,3 +94,10 @@ functions:
       - http:
           path: products/{id}
           method: delete
+  updateInventory:
+    handler: handler.updateInventory
+    events:
+      - sns:
+          arn: ${env:snsOrderCreatedTopic}
+      - sns:
+          arn: ${env:snsPurchaseCreatedTopic}

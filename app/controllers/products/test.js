@@ -7,6 +7,9 @@ const testHelper = require('../../utils/test.helper');
 
 beforeEach(testHelper.setupTest);
 let _id = "";
+let testBody = {
+  items: []
+};
 const getProductBody = () => {
   return {
     name: faker.commerce.productName(),
@@ -21,6 +24,7 @@ describe('Products', () => {
       let body = getProductBody()
       const result = await ProductsController.create({ body });
       _id = result._id;
+      testBody.items.push(result)
       expect(result.name).to.equal(body.name);
       expect(result.sku).to.equal(body.sku);
       expect(result.price).to.equal(parseInt(body.price));
@@ -43,6 +47,18 @@ describe('Products', () => {
       expect(result.image).to.equal(body.image);
       expect(result.quantity).to.greaterThan(5);
       expect(result.quantity).lessThan(20);
+    });
+  });
+});
+
+
+describe('Products', () => {
+  describe('updateInventory', () => {
+    it('should update product inventory by SKU', async () => {
+      testBody.method = 'sale'
+      let body = testBody;
+      const result = await ProductsController.updateInventory({ body });
+      expect(result).to.equal(true);
     });
   });
 });
