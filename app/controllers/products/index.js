@@ -1,5 +1,5 @@
 const { Product } = require('../../models');
-
+const mongoose = require('mongoose');
 const all = async () => {
   const products = await Product.find({});
   return products;
@@ -50,18 +50,28 @@ const update = async ({ id, body }) => {
 
 const updateInventory = async ({ body }) => {
   try {
+    const session = await mongoose.startSession();
     let skus = body.items.map((item) => {
       return item.sku;
     })
     let existingInventory = await Product.find().where('sku').in(skus);
-    await existingInventory.map(async (inventory) => {
-      await body.items.map(async (item) => {
+    await Promise.all(existingInventory.map(async (inventory) => {
+      await Promise.all(body.items.map(async (item) => {
         if (item.sku === inventory.sku) {
-          await Product.findOneAndUpdate({ sku: inventory.sku }, { quantity: body.method === 'sale' ? inventory.quantity - item.quantity : inventory.quantity + item.quantity })
+          session.startTransaction();
+          try {
+            await Product.findOneAndUpdate({ sku: inventory.sku }, { quantity: body.method === 'sale' ? inventory.quantity - item.quantity : inventory.quantity + item.quantity })
+            await session.commitTransaction();
+          }
+          catch (err) {
+            await session.abortTransaction();
+          }
         }
-      })
-    })
+      }))
+    }))
+    session.endSession();
     return true;
+
   }
   catch (err) {
     return { statusCode: 400, message: err.message };
